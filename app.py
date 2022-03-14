@@ -2,6 +2,7 @@ import json
 import os
 import boto3
 import logging
+import uuid
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -13,7 +14,7 @@ def write_message_to_table(message):
     response = client.put_item(
         TableName=table_name,
         Item={
-            'ID': {'N': '1'},
+            'ID': {'N': str(uuid.uuid4())},
             'Email': {'S': message['email']},
             'Message': {'S': message['message']},
             'Name': {'S': message['name']},

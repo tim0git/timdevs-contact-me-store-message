@@ -74,15 +74,11 @@ def setup_dynamodb_table():
         TableName=table_name,
         KeySchema=[
             {'AttributeName': 'ID', 'KeyType': 'HASH'},
-            {'AttributeName': 'Name', 'KeyType': 'RANGE'},
-            {'AttributeName': 'Email', 'KeyType': 'RANGE'},
-            {'AttributeName': 'Message', 'KeyType': 'RANGE'}
+            {'AttributeName': 'Email', 'KeyType': 'RANGE'}
         ],
         AttributeDefinitions=[
             {'AttributeName': 'ID', 'AttributeType': 'N'},
-            {'AttributeName': 'Name', 'AttributeType': 'S'},
-            {'AttributeName': 'Email', 'AttributeType': 'S'},
-            {'AttributeName': 'Message', 'AttributeType': 'S'}
+            {'AttributeName': 'Email', 'AttributeType': 'S'}
         ],
     )
     os.environ['TABLE_NAME'] = table_name
