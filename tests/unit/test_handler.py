@@ -77,7 +77,7 @@ def setup_dynamodb_table():
             {'AttributeName': 'Email', 'KeyType': 'RANGE'}
         ],
         AttributeDefinitions=[
-            {'AttributeName': 'ID', 'AttributeType': 'N'},
+            {'AttributeName': 'ID', 'AttributeType': 'S'},
             {'AttributeName': 'Email', 'AttributeType': 'S'}
         ],
     )

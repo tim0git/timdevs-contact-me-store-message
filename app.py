@@ -14,7 +14,7 @@ def write_message_to_table(message):
     response = client.put_item(
         TableName=table_name,
         Item={
-            'ID': {'N': str(uuid.uuid4())},
+            'ID': {'S': str(uuid.uuid4())},
             'Email': {'S': message['email']},
             'Message': {'S': message['message']},
             'Name': {'S': message['name']},
