@@ -6,6 +6,7 @@ import app
 from moto import mock_dynamodb
 import json
 from testfixtures import log_capture
+import time
 
 
 @pytest.fixture()
@@ -105,6 +106,17 @@ def test_returns_success_message_if_successful(apigw_event):
     assert_table_exists(table)
     ret = app.lambda_handler(apigw_event, "")
     assert ret["body"] == '{"message": "success"}'
+
+
+@mock_dynamodb
+def test_stores_ttl_in_dynamodb_successfully(apigw_event):
+    table = setup_dynamodb_table()
+    assert_table_exists(table)
+    app.lambda_handler(apigw_event, "")
+    result = table.scan()
+    expected_ttl = int(time.time()) + (30 * 86400)
+    ttl_stored_in_dynamo_db = result['Items'][0]['TTL']
+    assert ttl_stored_in_dynamo_db == expected_ttl
 
 
 # Error

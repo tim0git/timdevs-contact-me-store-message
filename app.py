@@ -3,6 +3,7 @@ import os
 import boto3
 import logging
 import uuid
+import time
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,6 +19,7 @@ def write_message_to_table(message):
             'Email': {'S': message['email']},
             'Message': {'S': message['message']},
             'Name': {'S': message['name']},
+            'TTL': {'N': str(int(time.time()) + (30 * 86400))},
         }
     )
     logger.info('Message written to Table: {}'.format(table_name))
