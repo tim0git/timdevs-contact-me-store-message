@@ -7,6 +7,10 @@ from moto import mock_dynamodb
 import json
 from testfixtures import log_capture
 import time
+from aws_xray_sdk import global_sdk_config
+
+# disable xray for testing purposes
+global_sdk_config.set_sdk_enabled(False)
 
 
 @pytest.fixture()

@@ -4,11 +4,13 @@ import boto3
 import logging
 import uuid
 import time
+from aws_xray_sdk.core import xray_recorder
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+@xray_recorder.capture("write_message_to_table")
 def write_message_to_table(message):
     table_name = os.environ.get('TABLE_NAME')
     client = boto3.client('dynamodb')
@@ -38,7 +40,6 @@ def lambda_handler(event, context):
         }
     except Exception as e:
         logger.error(str(e))
-        print(e)
         return {
             'statusCode': 500,
             'body': json.dumps({'message': 'error'})
