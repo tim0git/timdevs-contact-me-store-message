@@ -16,56 +16,42 @@ global_sdk_config.set_sdk_enabled(False)
 @pytest.fixture()
 def apigw_event():
     """ Generates API GW Event"""
+
     return {
-        "body": "{\"name\":\"test\",\"email\":\"test@gmail.com\",\"message\":\"test\"}",
-        "resource": "/{proxy+}",
-        "requestContext": {
-            "resourceId": "123456",
-            "apiId": "1234567890",
-            "resourcePath": "/{proxy+}",
-            "httpMethod": "POST",
-            "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-            "accountId": "123456789012",
-            "identity": {
-                "apiKey": "",
-                "userArn": "",
-                "cognitoAuthenticationType": "",
-                "caller": "",
-                "userAgent": "Custom User Agent String",
-                "user": "",
-                "cognitoIdentityPoolId": "",
-                "cognitoIdentityId": "",
-                "cognitoAuthenticationProvider": "",
-                "sourceIp": "127.0.0.1",
-                "accountId": "",
+        "Records": [
+            {
+                "messageId": "059f36b4-87a3-44ab-83d2-661975830a7d",
+                "receiptHandle": "AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...",
+                "body": "{\"name\":\"test\",\"email\":\"test@gmail.com\",\"message\":\"test\"}",
+                "attributes": {
+                    "ApproximateReceiveCount": "1",
+                    "SentTimestamp": "1545082649183",
+                    "SenderId": "AIDAIENQZJOLO23YVJ4VO",
+                    "ApproximateFirstReceiveTimestamp": "1545082649185"
+                },
+                "messageAttributes": {},
+                "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+                "eventSource": "aws:sqs",
+                "eventSourceARN": "arn:aws:sqs:us-east-2:123456789012:my-queue",
+                "awsRegion": "us-east-2"
             },
-            "stage": "prod",
-        },
-        "queryStringParameters": {"foo": "bar"},
-        "headers": {
-            "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
-            "Accept-Language": "en-US,en;q=0.8",
-            "CloudFront-Is-Desktop-Viewer": "true",
-            "CloudFront-Is-SmartTV-Viewer": "false",
-            "CloudFront-Is-Mobile-Viewer": "false",
-            "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
-            "CloudFront-Viewer-Country": "US",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Upgrade-Insecure-Requests": "1",
-            "X-Forwarded-Port": "443",
-            "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
-            "X-Forwarded-Proto": "https",
-            "X-Amz-Cf-Id": "aaaaaaaaaae3VYQb9jd-nvCd-de396Uhbp027Y2JvkCPNLmGJHqlaA==",
-            "CloudFront-Is-Tablet-Viewer": "false",
-            "Cache-Control": "max-age=0",
-            "User-Agent": "Custom User Agent String",
-            "CloudFront-Forwarded-Proto": "https",
-            "Accept-Encoding": "gzip, deflate, sdch",
-        },
-        "pathParameters": {"proxy": "/examplepath"},
-        "httpMethod": "POST",
-        "stageVariables": {"baz": "qux"},
-        "path": "/examplepath",
+            {
+                "messageId": "2e1424d4-f796-459a-8184-9c92662be6da",
+                "receiptHandle": "AQEBzWwaftRI0KuVm4tP+/7q1rGgNqicHq...",
+                "body": "Test message.",
+                "attributes": {
+                    "ApproximateReceiveCount": "1",
+                    "SentTimestamp": "1545082650636",
+                    "SenderId": "AIDAIENQZJOLO23YVJ4VO",
+                    "ApproximateFirstReceiveTimestamp": "1545082650649"
+                },
+                "messageAttributes": {},
+                "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+                "eventSource": "aws:sqs",
+                "eventSourceARN": "arn:aws:sqs:us-east-2:123456789012:my-queue",
+                "awsRegion": "us-east-2"
+            }
+        ]
     }
 
 
@@ -128,7 +114,7 @@ def test_stores_ttl_in_dynamodb_successfully(apigw_event):
 def test_returns_status_code_500_if_unsuccessful(apigw_event):
     table = setup_dynamodb_table()
     assert_table_exists(table)
-    apigw_event['body'] = json.dumps({"name": "test", "message": "test"})
+    apigw_event['Records'][0]['body'] = json.dumps({"name": "test", "message": "test"})
     ret = app.lambda_handler(apigw_event, "")
     assert ret["statusCode"] == 500
 
@@ -137,7 +123,7 @@ def test_returns_status_code_500_if_unsuccessful(apigw_event):
 def test_returns_error_message_if_unsuccessful(apigw_event):
     table = setup_dynamodb_table()
     assert_table_exists(table)
-    apigw_event['body'] = json.dumps({"name": "test", "message": "test"})
+    apigw_event['Records'][0]['body'] = json.dumps({"name": "test", "message": "test"})
     ret = app.lambda_handler(apigw_event, "")
     body = json.loads(ret["body"])
     assert body["message"] == "error"
@@ -166,7 +152,7 @@ def test_logs_info_request_and_success(capture, apigw_event):
 def test_logs_info_request_and_error_when_parameter_is_missing(capture, apigw_event):
     table = setup_dynamodb_table()
     assert_table_exists(table)
-    apigw_event['body'] = json.dumps({"name": "test", "message": "test"})
+    apigw_event['Records'][0]['body'] = json.dumps({"name": "test", "message": "test"})
     app.lambda_handler(apigw_event, "")
     capture.check(
         credential_log,
@@ -180,7 +166,7 @@ def test_logs_info_request_and_error_when_parameter_is_missing(capture, apigw_ev
 def test_logs_info_request_and_error_when_parameter_is_of_wrong_type(capture, apigw_event):
     table = setup_dynamodb_table()
     assert_table_exists(table)
-    apigw_event['body'] = json.dumps({"name": 123456, "message": "test", "email": "test@gmail.com"})
+    apigw_event['Records'][0]['body'] = json.dumps({"name": 123456, "message": "test", "email": "test@gmail.com"})
     app.lambda_handler(apigw_event, "")
     capture.check(
         credential_log,

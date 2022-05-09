@@ -31,7 +31,7 @@ def write_message_to_table(message):
 def lambda_handler(event, context):
     logger.info("Received event")
     try:
-        body = event['body']
+        body = event['Records'][0]['body']
         message = json.loads(body)
         write_message_to_table(message)
         return {
