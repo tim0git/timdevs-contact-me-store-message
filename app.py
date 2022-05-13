@@ -5,9 +5,12 @@ import logging
 import uuid
 import time
 from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+patch_all()
 
 
 @xray_recorder.capture("write_message_to_table")
@@ -34,14 +37,8 @@ def lambda_handler(event, context):
         body = event['Records'][0]['body']
         message = json.loads(body)
         write_message_to_table(message)
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'message': 'success'})
-        }
+        return
     except Exception as e:
         logger.error(str(e))
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'message': 'error'})
-        }
+        return
 

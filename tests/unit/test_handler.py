@@ -83,22 +83,6 @@ def assert_table_exists(test_table):
 
 # Success
 @mock_dynamodb
-def test_returns_status_code_200_if_successful(apigw_event):
-    table = setup_dynamodb_table()
-    assert_table_exists(table)
-    ret = app.lambda_handler(apigw_event, "")
-    assert ret["statusCode"] == 200
-
-
-@mock_dynamodb
-def test_returns_success_message_if_successful(apigw_event):
-    table = setup_dynamodb_table()
-    assert_table_exists(table)
-    ret = app.lambda_handler(apigw_event, "")
-    assert ret["body"] == '{"message": "success"}'
-
-
-@mock_dynamodb
 def test_stores_ttl_in_dynamodb_successfully(apigw_event):
     table = setup_dynamodb_table()
     assert_table_exists(table)
@@ -110,24 +94,6 @@ def test_stores_ttl_in_dynamodb_successfully(apigw_event):
 
 
 # Error
-@mock_dynamodb
-def test_returns_status_code_500_if_unsuccessful(apigw_event):
-    table = setup_dynamodb_table()
-    assert_table_exists(table)
-    apigw_event['Records'][0]['body'] = json.dumps({"name": "test", "message": "test"})
-    ret = app.lambda_handler(apigw_event, "")
-    assert ret["statusCode"] == 500
-
-
-@mock_dynamodb
-def test_returns_error_message_if_unsuccessful(apigw_event):
-    table = setup_dynamodb_table()
-    assert_table_exists(table)
-    apigw_event['Records'][0]['body'] = json.dumps({"name": "test", "message": "test"})
-    ret = app.lambda_handler(apigw_event, "")
-    body = json.loads(ret["body"])
-    assert body["message"] == "error"
-
 
 # Logging
 credential_log = ('botocore.credentials', 'INFO', 'Found credentials in environment variables.')
