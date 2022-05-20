@@ -40,5 +40,5 @@ def lambda_handler(event, context):
         return
     except Exception as e:
         logger.error(str(e))
-        return
+        raise RuntimeError(e)
 
