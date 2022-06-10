@@ -34,7 +34,9 @@ def lambda_handler(event, context):
         body = event['Records'][0]['body']
         message = json.loads(body)
         write_message_to_table(message)
+        tracer.put_annotation(key="MessageWriteStatus", value="SUCCESS")
         return
     except Exception as e:
         logger.error(str(e))
+        tracer.put_annotation(key="MessageWriteStatus", value="ERROR")
         raise RuntimeError(e)
