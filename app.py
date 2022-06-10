@@ -28,6 +28,7 @@ def write_message_to_table(message):
 
 
 @tracer.capture_lambda_handler
+@logger.inject_lambda_context
 def lambda_handler(event, context):
     logger.info("Received event")
     try:
