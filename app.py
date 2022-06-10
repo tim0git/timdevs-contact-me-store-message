@@ -38,6 +38,6 @@ def lambda_handler(event, context):
         tracer.put_annotation(key="MessageWriteStatus", value="SUCCESS")
         return
     except Exception as e:
-        logger.error(str(e))
+        logger.exception(str(e))
         tracer.put_annotation(key="MessageWriteStatus", value="ERROR")
         raise RuntimeError(e)
