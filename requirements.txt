@@ -4,3 +4,5 @@ aws_xray_sdk~=2.9.0
 pytest==7.1.1
 moto==3.1.4
 testfixtures~=6.18.5
+aws_lambda_powertools==1.26.1
+

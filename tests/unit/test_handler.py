@@ -151,7 +151,7 @@ def test_handles_validation_error_when_email_value_is_not_of_valid_type(apigw_ev
 
 # Logging
 credential_log = ('botocore.credentials', 'INFO', 'Found credentials in environment variables.')
-event_received_log = ('root', 'INFO', 'Received event')
+event_received_log = ('store-message-staging', 'INFO', 'Received event')
 
 
 @mock_dynamodb
@@ -163,7 +163,7 @@ def test_logs_info_request_and_success(capture, apigw_event):
     capture.check(
         credential_log,
         event_received_log,
-        ('root', 'INFO', 'Message written to Table: {}'.format(os.environ['TABLE_NAME']))
+        ('store-message-staging', 'INFO', 'Message written to Table: {}'.format(os.environ['TABLE_NAME']))
     )
 
 
@@ -178,7 +178,7 @@ def test_logs_info_request_and_error_when_parameter_is_missing(capture, apigw_ev
         capture.check(
             credential_log,
             event_received_log,
-            ('root', 'ERROR', "'email'"),
+            ('store-message-staging', 'ERROR', "'email'"),
         )
 
 
@@ -193,7 +193,7 @@ def test_logs_info_request_and_error_when_parameter_is_of_wrong_type(capture, ap
         capture.check(
             credential_log,
             event_received_log,
-            ('root', 'ERROR', 'Parameter validation failed:\n'
+            ('store-message-staging', 'ERROR', 'Parameter validation failed:\n'
                               "Invalid type for parameter Item.Name.S, value: 123456, type: <class 'int'>, "
                               "valid types: <class 'str'>"),
         )

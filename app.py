@@ -1,19 +1,15 @@
 import json
 import os
 import boto3
-import logging
 import uuid
 import time
-from aws_xray_sdk.core import xray_recorder
-from aws_xray_sdk.core import patch_all
+from aws_lambda_powertools import Logger, Tracer
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-patch_all()
+logger = Logger(service="store-message-staging")
+tracer = Tracer(service="store-message-staging")
 
 
-@xray_recorder.capture("write_message_to_table")
+@tracer.capture_method
 def write_message_to_table(message):
     table_name = os.environ.get('TABLE_NAME')
     client = boto3.client('dynamodb')
@@ -31,6 +27,7 @@ def write_message_to_table(message):
     return response
 
 
+@tracer.capture_lambda_handler
 def lambda_handler(event, context):
     logger.info("Received event")
     try:
@@ -41,4 +38,3 @@ def lambda_handler(event, context):
     except Exception as e:
         logger.error(str(e))
         raise RuntimeError(e)
-
