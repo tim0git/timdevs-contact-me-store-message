@@ -3,10 +3,12 @@ import os
 import boto3
 import uuid
 import time
-from aws_lambda_powertools import Logger, Tracer
+from aws_lambda_powertools import Logger, Tracer, Metrics
+from aws_lambda_powertools.metrics import MetricUnit
 
-logger = Logger(service="store-message-staging")
-tracer = Tracer(service="store-message-staging")
+logger = Logger()
+tracer = Tracer()
+metrics = Metrics()
 
 
 @tracer.capture_method
@@ -36,8 +38,10 @@ def lambda_handler(event, context):
         message = json.loads(body)
         write_message_to_table(message)
         tracer.put_annotation(key="MessageWriteStatus", value="SUCCESS")
+        metrics.add_metric(name="MessagesWritten", unit=MetricUnit.Count, value=1)
         return
     except Exception as e:
         logger.exception(str(e))
         tracer.put_annotation(key="MessageWriteStatus", value="ERROR")
+        metrics.add_metric(name="MessagesNotWritten", unit=MetricUnit.Count, value=1)
         raise RuntimeError(e)
