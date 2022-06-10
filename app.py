@@ -29,6 +29,7 @@ def write_message_to_table(message):
     return response
 
 
+@metrics.log_metrics
 @tracer.capture_lambda_handler
 @logger.inject_lambda_context
 def lambda_handler(event, context):
